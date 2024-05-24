@@ -1,71 +1,412 @@
-extends widget/base
-block append head
-  link(rel='stylesheet', href= url_for('/style/post.css'))
-  link(rel='stylesheet', href= url_for('/style/themes/highlight-theme-light.css'))
-  link(rel='stylesheet', href= url_for('/style/common/jquery.fancybox.min.css'))
-  script(src= url_for("/js/highlight.pack.js"))
-  meta(name="description", content=truncate( strip_html(page.content), {length: 360, omission: '..'} ))
-  if theme.comment_valine && theme.comment_valine.enable
-      script(src="//unpkg.com/valine/dist/Valine.min.js")
-block topic
-    div#postTopic.is-full-height
-        - var title = truncate( page.title, {length: 65, omission: '..'} ) || ''
-        p.is-full-height.is-flex-shrink-0.is-flex.is-align-items-center.is-justify-content-center= title
-        p.is-full-height.is-flex-shrink-0.is-flex.is-align-items-center.is-justify-content-center= __('click_back_to_the_top')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-block content
-    - var tocContent = toc(page.content, {list_number: false})
-    main.container.is-max-widescreen.content.section.post-page.pt-4.px-4
-        .columns.is-flex-desktop.is-justify-content-center.is-flex-direction-row-reverse
-            .column.is-3.is-hidden-mobile(class= tocContent.length < 1 && 'is-hidden')!= tocContent
-            .column.is-9
-                header.my-4
-                    if page.tags && page.tags.length > 0
-                        each tag in page.tags.toArray()
-                            a(href= url_for(`/tags/${tag.name}`))
-                                i.tag.post-item-tag= tag.name
-                h1.mt-0.mb-1.is-family-serif#postTitle= page.title
-                if page.date
-                    time.has-text-grey(datetime=page.date.toJSON())= date(page.date, date_format)
-                article.mt-2.post-content!= page.content
-                section.jump-container.is-flex.is-justify-content-space-between.my-6
-                    // em is empty placeholder
-                    if page.prev
-                        - var preContent= `${ __('prev') }: ${ page.prev.title }`
-                        a.button.is-default(href= url_for(page.prev.path) title= page.prev.title)
-                            i.iconfont.icon-prev.mr-2.has-text-grey
-                            span.has-text-weight-semibold= preContent
-                    else
-                        em
-                    if page.next
-                        - var nextContent= `${ __('next') }: ${ page.next.title }`
-                        a.button.is-default(href= url_for(page.next.path) title= page.next.title)
-                            span.has-text-weight-semibold= nextContent
-                            i.iconfont.icon-next.ml-2.has-text-grey
-                if theme.comment_utteranc && theme.comment_utteranc.enable
-                    article.mt-6.comment-container
-                        script(
-                            async
-                            repo= theme.comment_utteranc.repo
-                            src= "https://utteranc.es/client.js"
-                            label= theme.comment_utteranc.label
-                            issue-term= theme.comment_utteranc.issue_term || "pathname"
-                            theme= theme.comment_utteranc.theme || "preferred-color-scheme"
-                        )
-                if theme.comment_valine && theme.comment_valine.enable
-                    article.mt-6.comment-container#vcomments(
-                        data-comment_valine_id= theme.comment_valine.appId
-                        data-comment_valine_key= theme.comment_valine.appKey
-                    )
-                if theme.comment_disqus && theme.comment_disqus.enable
-                    div#disqus_thread
-                    article.mt-6.comment-container#disqus
-                        script="var disqus_config = function () {this.page.url = '"+theme.comment_disqus.url+url_for(page.path)+"';this.page.identifier = '"+theme.comment_disqus.name+"';};"
-                        script="(function() {var d = document, s = d.createElement('script');s.src = 'https://"+theme.comment_disqus.name+".disqus.com/embed.js';s.setAttribute('data-timestamp', +new Date());(d.head || d.body).appendChild(s);})();"
-                        script(id="dsq-count-scr", src="//blog-pubgj2togw.disqus.com/count.js", async)
-block script
-    if theme.image_zoom && theme.image_zoom.enable
-        script(src= url_for("/js/jquery-3.6.1.min.js"))
-        script(src= url_for("/js/jquery-fancybox.min.js"))
-        script(src= url_for("/js/img_zoom.js"))
-    script(src= url_for("/js/post.js"))
+<!--Description-->
+
+
+
+    <meta name="description" content="Aurora
+極光形成原理淺解
+太陽風暴太陽耀斑會釋放出大量高能量及高速移動的帶電粒子，亦即是俗稱的太陽風暴。
+
+看過這些不常出現的低緯度極光相片，大家有沒有發現，今次的極光以紫紅色為主，有別於平時常見的綠至淺綠色或藍色？原因其實與太陽耀斑的強度，以及它們撞擊地球大氣層的哪一部分有關。
+太陽越活躍，"/>
+
+
+<!--Author-->
+
+    <meta name="author" content="Aurora"/>
+
+
+<!--Open Graph Title-->
+
+    <meta property="og:title" content="Aurora theory"/>
+
+
+<!--Open Graph Description-->
+
+    <meta property="og:description" content="Aurora
+極光形成原理淺解
+太陽風暴太陽耀斑會釋放出大量高能量及高速移動的帶電粒子，亦即是俗稱的太陽風暴。
+
+看過這些不常出現的低緯度極光相片，大家有沒有發現，今次的極光以紫紅色為主，有別於平時常見的綠至淺綠色或藍色？原因其實與太陽耀斑的強度，以及它們撞擊地球大氣層的哪一部分有關。
+太陽越活躍，"/>
+
+
+<!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Let&#39;s see aurora"/>
+
+<!--Type page-->
+
+    <meta property="og:type" content="article"/>
+
+
+<!--Page Cover-->
+
+
+    <meta property="og:image" content="https://wave99.github.io/homework/img/home-bg.jpg"/>
+
+
+<meta name="twitter:card" content="summary_large_image"/>
+
+
+
+
+    <meta name="twitter:image" content="https://wave99.github.io/homework/img/home-bg.jpg"/>
+
+
+<!-- Title -->
+
+<title>Aurora theory | Let&#39;s see aurora</title>
+
+<!-- Bootstrap Core CSS -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+
+<!-- Custom CSS -->
+
+<link rel="stylesheet" href="/homework/css/main.css">
+
+
+<!-- Custom Fonts -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.0/css/all.min.css" />
+<link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.0/css/all.min.css" />
+<link href="//fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+<link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css"/>
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<!-- Gallery -->
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/featherlight@1.4.0/src/featherlight.css" integrity="sha256-30DV/STftlyQ6v8yaOWlabammvCYtRJERLj/m0b3zno=" crossorigin="anonymous">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/lightgallery@1.6.11/dist/css/lightgallery.min.css">
+
+<!-- favicon -->
+
+<link rel="icon" href="/homework/img/favicon.png"/>
+
+
+
+    <!-- Google Analytics -->
+    
+
+
+<meta name="generator" content="Hexo 7.2.0"></head>
+<!-- Head tag -->
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top bg-transparent position-absolute w-100 p-0" id="nav">
+    <div class="container pl-0 pr-0">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <a class="navbar-brand text-white p-1 pl-3" href="/homework/">Let's see aurora</a>
+        </div>
+        <div class="navbar-nav float-right">
+            <button class="btn btn-link search-btn navbar-item" data-toggle="modal" data-target="#searchModal">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('/homework/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 text-center">
+                <div class="post-heading text-white">
+                    <h1>Aurora theory</h1>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Main Content -->
+            <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+                
+                    <span class="meta d-inline-block">
+    
+    
+    <!-- Date -->
+    
+        <span class="post-meta-split">&nbsp;|&nbsp;</span>
+        <i class="far fa-calendar-check fa-fw"></i>
+        2024-05-24
+    
+    <!-- word count and read count -->
+    
+
+    
+
+    
+</span>  
+                
+                <p><div class="img-item" data-src="https://cdn01.dcfever.com/articles/news/2024/05/240515_aurorastorm_03.jpg" data-sub-html=".caption"><img src="https://cdn01.dcfever.com/articles/news/2024/05/240515_aurorastorm_03.jpg" alt="Aurora"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">Aurora</span></div></div></p>
+<h3 id="極光形成原理淺解"><a href="#極光形成原理淺解" class="headerlink" title="極光形成原理淺解"></a>極光形成原理淺解</h3><blockquote>
+<p>太陽風暴<br>太陽耀斑會釋放出大量高能量及高速移動的帶電粒子，亦即是俗稱的太陽風暴。</p>
+</blockquote>
+<p>看過這些不常出現的低緯度極光相片，大家有沒有發現，今次的極光以紫紅色為主，有別於平時常見的綠至淺綠色或藍色？原因其實與太陽耀斑的強度，以及它們撞擊地球大氣層的哪一部分有關。</p>
+<p>太陽越活躍，耀斑越大、越多或越強烈，釋放的帶電粒子就越多，且蘊含越高的能量。</p>
+<h3 id="低緯度極光"><a href="#低緯度極光" class="headerlink" title="低緯度極光"></a>低緯度極光</h3><blockquote>
+<p>極光色彩<br>較高層的大氣之中存有相對稀少的氧分子（O）。當它們與帶電粒子相撞時會釋放紅光。這些紅光會與由氮分子釋放的少量藍光混合，形成紫色的極光。</p>
+</blockquote>
+<p>在一般情況下，來自太陽的帶電粒子主要與大氣層中高度在 100km 至 300km 之間的氧原子（O）碰撞並釋放出綠光。但在猛烈的太陽風暴吹襲時，帶電粒子能夠與低層大氣（高度 80km 至 100km）中數目更多的氮分子（N2）碰撞並釋放出紅光。</p>
+<p><div class="img-item" data-src="https://i.imgur.com/oHFAD0P.jpeg" data-sub-html=".caption"><img src="https://i.imgur.com/oHFAD0P.jpeg" alt="KP"><div class="img-caption d-block text-center"><span class="center-caption text-muted border-bottom">KP</span></div></div></p>
+<p><em>本篇文章單純為作業繳交，文章圖片內容著作權皆不屬於我</em></p>
+
+            </div>
+
+            <!-- Post information -->
+            
+    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 post-tags">
+        
+            <i class="fas fa-tag" style="vertical-align: middle;font-size: .8rem;"></i>
+            tags:&nbsp;
+            
+            
+        
+            <a href="/homework/tags/Aurora-Europe/">#Aurora Europe</a>
+        
+    </div>
+
+            
+    <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+        <ul class="pagination d-block text-center">
+            
+            
+                <li class="next page-item d-inline"><a href="/homework/2024/05/24/France-Aurora/" class="page-link float-right">Older  &rarr;</a></li>
+            
+        </ul>
+    </div>
+
+
+            
+                <!-- Comments -->
+                
+
+                
+
+            
+
+        </div>
+    </div>
+</article> 
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+    <style>
+        #toc-content .toc-link::before {
+            background-color: transparent;
+            max-height: 25px;
+        }
+
+        #toc-content .toc-link.is-active-link::before {
+            background-color: #404040;
+        }
+    </style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    <div class="ui-toc dropup scrollspy-body pull-right" style="right: 3%;">
+        <button type="button" class="toc-btn btn btn-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+            <i class="fas fa-list"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right p-2"  aria-labelledby="tocLabel">
+            <div class="toc-widget">
+                <div id="toc-content" class="text-truncate">
+                </div>
+            </div>
+            <div class="toc-menu pt-3 pl-4">
+                <a class="expand-toggle d-block py-1" href="#"><span class="expand-text">Expand all</span><span class="close-text" style="display: none;">Collapse all</span></a>
+                <a class="back-to-top d-block py-1" href="#">Back to top</a>
+                <a class="go-to-bottom d-block py-1" href="#">Go to bottom</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        tocbot.init({
+            // Where to render the table of contents.
+            tocSelector: '#toc-content',
+            // Where to grab the headings to build the table of contents.
+            contentSelector: 'article',
+            // Which headings to grab inside of the contentSelector element.
+            headingSelector: 'h1, h2, h3',
+            // For headings inside relative or absolute positioned containers within content.
+            hasInnerContainers: true,
+        });
+    </script>
+
+
+    
+
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer id="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1 text-center">
+                <ul class="list-inline">
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <ul class="copyright footer-menu list-inline">
+                    
+                    
+                        <li class="list-inline-item">
+                            
+                            
+                            <a href="/homework/">
+                                
+                                    Home
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/homework/archives">
+                                
+                                    Archives
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/homework/tags">
+                                
+                                    Tags
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/homework/categories">
+                                
+                                    Categories
+                                
+                            </a>
+                        </li>
+                    
+                        <li class="list-inline-item">
+                            
+                                <span class="copyright-split">&nbsp;|&nbsp;</span>
+                            
+                            
+                            <a href="/homework/about">
+                                
+                                    About
+                                
+                            </a>
+                        </li>
+                    
+                </ul>
+                <p class="copyright footer-author">
+                    &copy; -2024 
+                    <a rel="external" class="copyright-link" href="" target="_blank">Aurora</a><br/>
+                    Powered by <a rel="external" class="copyright-link" href="https://hexo.io/" target="_blank">Hexo</a>  
+                    <span class="copyright-split">&nbsp;|&nbsp;&nbsp;</span>
+                    Theme <a rel="external" class="copyright-link" href="https://github.com/luswdev/hexo-theme-clean.git" target="_blank">Clean</a>
+                    
+                    
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    <!-- jQuery -->
+<script src="//cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script>
+
+<!-- For drop down -->
+<script src="//cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+<!-- Gallery -->
+<script src="//cdn.jsdelivr.net/npm/lightgallery@1.6.11/dist/js/lightgallery-all.min.js"></script>
+<!-- Busuanzi -->
+
+
+<!-- Search script -->
+
+<script src="/homework/js/search.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+        searchFunc( '/homework/search.xml' , 'searchInput', 'searchResult');
+    });
+</script>
+
+
+
+<script src="/homework/js/main.js"></script>
+
+
+
+    <!-- Search Modal -->
+    <!-- Modal -->
+<div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-content overflow-auto">
+            <div class="modal-header">
+                <input type="text" class="form-control" placeholder="Searching Keywords..." id="searchInput">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div id="searchResult">
+                    <div class="search-empty text-center text-muted p-5">
+                        <i class="far fa-meh"></i>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>
